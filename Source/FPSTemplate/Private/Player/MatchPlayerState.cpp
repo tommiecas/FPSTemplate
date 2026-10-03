@@ -9,7 +9,7 @@
 
 AMatchPlayerState::AMatchPlayerState()
 {
-	NetUpdateFrequency = 100.f; // let's not be sluggish, alright?
+	SetNetUpdateFrequency(100.f); // let's not be sluggish, alright?
 	
 	ScoredElims = 0;
 	Defeats = 0;

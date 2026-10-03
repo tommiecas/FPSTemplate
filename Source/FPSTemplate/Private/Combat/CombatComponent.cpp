@@ -615,7 +615,7 @@ FVector UCombatComponent::HitScanTrace(float SweepRadius, FHitResult& OutHit)
 	ResponseParams.CollisionResponse.SetResponse(ECC_WorldDynamic, ECR_Block);
 	ResponseParams.CollisionResponse.SetResponse(ECC_PhysicsBody, ECR_Block);
 
-	FVector2D ViewportSize;
+	FVector2D ViewportSize = FVector2D::ZeroVector;
 	if (GEngine && GEngine->GameViewport)
 	{
 		GEngine->GameViewport->GetViewportSize(ViewportSize);
