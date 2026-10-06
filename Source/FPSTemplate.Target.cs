@@ -11,5 +11,7 @@ public class FPSTemplateTarget : TargetRules
 		DefaultBuildSettings = BuildSettingsVersion.V7;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_8;
 		ExtraModuleNames.Add("FPSTemplate");
+		ExtraModuleNames.Add("DedicatedServers");
+
 	}
 }

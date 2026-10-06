@@ -8,7 +8,12 @@
 			"Name": "FPSTemplate",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
-		}
+		},
+        {
+            "Name": "DedicatedServers",
+            "Type": "Runtime",
+            "LoadingPhase": "Default"
+        }
 	],
 	"Plugins": [
 		{

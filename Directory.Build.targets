@@ -1,0 +1,20 @@
+<Project>
+  <!-- Unreal's generated Makefile projects use IncludePath for IntelliSense.
+       UBT supplies compiler include paths itself. Avoid exporting an oversized
+       IntelliSense list to Windows' size-limited INCLUDE environment variable. -->
+  <Target Name="FPSTemplatePrepareMakefileIncludeEnvironment"
+          BeforeTargets="SetBuildDefaultEnvironmentVariables"
+          Condition="'$(ConfigurationType)' == 'Makefile' and '$(MSBuildProjectName)' == 'FPSTemplate'">
+    <PropertyGroup>
+      <FPSTemplateSavedIncludePath>$(IncludePath)</FPSTemplateSavedIncludePath>
+      <IncludePath>$(DefaultSystemIncludePaths)</IncludePath>
+    </PropertyGroup>
+  </Target>
+  <Target Name="FPSTemplateRestoreMakefileIncludePath"
+          AfterTargets="SetBuildDefaultEnvironmentVariables"
+          Condition="'$(ConfigurationType)' == 'Makefile' and '$(MSBuildProjectName)' == 'FPSTemplate'">
+    <PropertyGroup>
+      <IncludePath>$(FPSTemplateSavedIncludePath)</IncludePath>
+    </PropertyGroup>
+  </Target>
+</Project>

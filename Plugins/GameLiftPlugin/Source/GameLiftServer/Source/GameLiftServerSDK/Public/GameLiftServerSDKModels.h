@@ -202,7 +202,8 @@ struct GAMELIFTSERVERSDK_API FGameLiftError {
 };
 
 template <typename R, typename E>
-class GAMELIFTSERVERSDK_API TGameLiftOutcome
+// Header-defined templates must be instantiated by consumers, including DebugGame builds.
+class TGameLiftOutcome
 {
 public:
 
