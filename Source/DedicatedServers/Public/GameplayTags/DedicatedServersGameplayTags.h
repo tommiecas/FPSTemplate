@@ -6,5 +6,7 @@ namespace DedicatedServersGameplayTags
 	namespace GameSessionsAPI
 	{
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(ListFleetsResource);
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(FindOrCreateGameSessionResource);
+
 	}
 }
