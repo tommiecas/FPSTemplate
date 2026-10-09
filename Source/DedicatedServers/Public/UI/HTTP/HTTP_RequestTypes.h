@@ -47,7 +47,7 @@ struct FDS_GameSessionResponse
 	GENERATED_BODY()
 
 	UPROPERTY()
-	double CreationTime{};
+	FString CreationTime{};
 
 	UPROPERTY()
 	FString CreatorId{};
@@ -101,7 +101,152 @@ struct FDS_GameSessionResponse
 	FString StatusReason{};
 
 	UPROPERTY()
-	double TerminationTime{};
+	FString TerminationTime{};
 
 	void Dump() const;	
+};
+
+USTRUCT()
+struct FDS_PlayerSessionResponse
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FString CreationTime{};
+
+	UPROPERTY()
+	FString DnsName{};
+
+	UPROPERTY()
+	FString FleetArn{};
+
+	UPROPERTY()
+	FString FleetId{};
+
+	UPROPERTY()
+	FString GameSessionId{};
+
+	UPROPERTY()
+	FString IpAddress{};
+
+	UPROPERTY()
+	FString PlayerData{};
+
+	UPROPERTY()
+	FString PlayerId{};
+
+	UPROPERTY()
+	FString PlayerSessionId{};
+
+	UPROPERTY()
+	int32 Port{};
+
+	UPROPERTY()
+	FString Status{};
+
+	UPROPERTY()
+	FString TerminationTime{};
+
+	void Dump() const;
+};
+
+
+USTRUCT()
+struct FDS_CodeDeliveryDetails
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FString AttributeName{};
+
+	UPROPERTY()
+	FString DeliveryMedium{};
+
+	UPROPERTY()
+	FString Destination{};
+
+	void Dump() const;
+};
+
+USTRUCT()
+struct FDS_SignUp_Response
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FDS_CodeDeliveryDetails CodeDeliveryDetails{};
+
+	UPROPERTY()
+	FString Session{};
+
+	UPROPERTY()
+	bool UserConfirmed{};
+
+	UPROPERTY()
+	FString UserSub{};
+
+	void Dump() const;
+};
+
+USTRUCT()
+struct FDS_NewDeviceMetadata
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FString DeviceGroupKey{};
+
+	UPROPERTY()
+	FString DeviceKey{};
+
+	void Dump() const;
+};
+
+USTRUCT()
+struct FDS_AuthenticationResult
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FString AccessToken{};
+
+	UPROPERTY()
+	int32 ExpiresIn{};
+
+	UPROPERTY()
+	FString IdToken{};
+
+	UPROPERTY()
+	FDS_NewDeviceMetadata NewDeviceMetadata{};
+
+	UPROPERTY()
+	FString RefreshToken{};
+
+	UPROPERTY()
+	FString TokenType{};
+
+	void Dump() const;
+};
+
+USTRUCT()
+struct FDS_InitiateAuth_Response
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FDS_AuthenticationResult AuthenticationResult{};
+
+	UPROPERTY()
+	TArray<FString> AvailableChallenges{};
+
+	UPROPERTY()
+	FString ChallengeName{};
+
+	UPROPERTY()
+	TMap<FString, FString> ChallengeParameters{};
+
+	UPROPERTY()
+	FString Session{};
+
+	void Dump() const;
 };

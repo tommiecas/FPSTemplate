@@ -21,7 +21,7 @@ struct FUserProfileInfo
  	UPROPERTY(config, EditAnywhere, Category = "AWS Credentials")
     FString S3Bucket;
  	UPROPERTY(config, EditAnywhere, Category = "AWS Credentials")
- 	int BootstrapStatus;
+ 	int BootstrapStatus = 0;
     UPROPERTY(config, EditAnywhere, Category = "AWS Credentials")
     FString BootstrapError;
  };

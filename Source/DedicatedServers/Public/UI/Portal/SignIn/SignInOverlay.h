@@ -6,8 +6,14 @@
 #include "Blueprint/UserWidget.h"
 #include "SignInOverlay.generated.h"
 
+class UButton;
+class UUSuccessConfirmedPage;
+class UConfirmSignUpPage;
+class USignUpPage;
+class USignInPage;
 class UPortalManager;
 class UJoinGameWidget;
+class UWidgetSwitcher;
 /**
  * 
  */
@@ -17,11 +23,11 @@ class DEDICATEDSERVERS_API USignInOverlay : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UJoinGameWidget> JoinGameWidget;
-
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UPortalManager> PortalManagerClass;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UWidgetSwitcher> WidgetSwitcher;
 
 protected:
 	virtual void NativeConstruct() override;
@@ -29,14 +35,46 @@ protected:
 	
 	
 private:
-	UFUNCTION()
-	void OnJoinGameButtonClicked();
+	UPROPERTY (meta = (BindWidget))
+	TObjectPtr<USignInPage> SignInPage;
 
-	UFUNCTION()
-	void UpdateJoinGameStatusMessage(const FString& StatusMessage, bool bResetJoinGameButton);
+	UPROPERTY (meta = (BindWidget))
+	TObjectPtr<USignUpPage> SignUpPage;
 	
+	UPROPERTY (meta = (BindWidget))
+	TObjectPtr<UConfirmSignUpPage> ConfirmSignUpPage;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UUSuccessConfirmedPage> SuccessConfirmedPage;
+
 	UPROPERTY()
 	TObjectPtr<UPortalManager> PortalManager;
 
+	UFUNCTION()
+	void ShowSignInPage();
+                                                                                                            
+    UFUNCTION()
+    void ShowSignUpPage();
+                                                                                                            
+    UFUNCTION()
+    void ShowConfirmSignUpPage();
+                                                                                                            
+    UFUNCTION()
+    void ShowSuccessConfirmedPage();
+
+	UFUNCTION()
+	void OnSignInButtonClicked();
+
+	UFUNCTION()
+	void OnSignUpButtonClicked();
+
+	UFUNCTION()
+	void OnConfirmButtonClicked();
+
+	UFUNCTION()
+	void OnSignUpSucceeded();
+
+	UFUNCTION()
+	void OnConfirmSucceeded();
 	
 };

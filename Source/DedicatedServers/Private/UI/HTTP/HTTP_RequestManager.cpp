@@ -38,3 +38,19 @@ bool UHTTP_RequestManager::ContainsErrors(TSharedPtr<FJsonObject> JsonObject)
 	}
 	else return false;
 }
+
+FString UHTTP_RequestManager::SerializeJsonContent(const TMap<FString, FString>& Params)
+{
+	TSharedPtr<FJsonObject> ContentJsonObject = MakeShareable(new FJsonObject);
+
+	for (const auto& Param : Params)
+	{
+		ContentJsonObject->SetStringField(Param.Key, Param.Value);
+	}
+	
+	FString Content;
+	TSharedRef<TJsonWriter<>> JsonWriter = TJsonWriterFactory<>::Create(&Content);
+	FJsonSerializer::Serialize(ContentJsonObject.ToSharedRef(), JsonWriter);
+
+	return Content;
+}
