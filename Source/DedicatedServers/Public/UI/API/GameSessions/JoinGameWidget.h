@@ -17,12 +17,14 @@ class DEDICATEDSERVERS_API UJoinGameWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	void SetStatusMessage(const FString& Message) const;
-	
+	UFUNCTION()
+	void SetStatusMessage(const FString& Message, bool bShouldResetWidgets) const;
+
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> Button_JoinGame;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> TextBlock_StatusMessage;
+
 	
 };

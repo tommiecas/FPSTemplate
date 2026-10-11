@@ -6,6 +6,21 @@
 #include "JsonObjectConverter.h"
 #include "DedicatedServers/DedicatedServers.h"
 #include "UI/HTTP/HTTP_RequestTypes.h"
+#include "Players/DS_LocalPlayerSubsystem.h"
+
+UDS_LocalPlayerSubsystem* UHTTP_RequestManager::GetDS_LocalPlayerSubsystem() const
+{
+	APlayerController* LocalPlayerController = GEngine->GetFirstLocalPlayerController(GetWorld());
+	if (IsValid(LocalPlayerController))
+	{
+		ULocalPlayer* LocalPlayer = Cast<ULocalPlayer>(LocalPlayerController->Player);
+		if (IsValid(LocalPlayer))
+		{
+			return LocalPlayer->GetSubsystem<UDS_LocalPlayerSubsystem>();
+		}
+	}
+	return nullptr;
+}
 
 void UHTTP_RequestManager::DumpMetaData(TSharedPtr<FJsonObject> JsonObject)
 {
@@ -33,7 +48,14 @@ bool UHTTP_RequestManager::ContainsErrors(TSharedPtr<FJsonObject> JsonObject)
 	if (JsonObject->HasField(TEXT("$fault")))
 	{
 		FString ErrorType = JsonObject->HasField(TEXT("name")) ? JsonObject->GetStringField(TEXT("name")) : TEXT("Unknown Error");
+		FString ErrorMessage;
+		if (!JsonObject->TryGetStringField(TEXT("message"), ErrorMessage) &&
+			!JsonObject->TryGetStringField(TEXT("Message"), ErrorMessage))
+		{
+			ErrorMessage = TEXT("Backend did not include an error message; check the Lambda CloudWatch logs.");
+		}
 		UE_LOG(LogDedicatedServers, Error, TEXT("Error Type: %s"), *ErrorType);
+		UE_LOG(LogDedicatedServers, Error, TEXT("Error Message: %s"), *ErrorMessage);
 		return true;
 	}
 	else return false;

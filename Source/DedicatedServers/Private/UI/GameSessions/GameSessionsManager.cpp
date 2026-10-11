@@ -13,6 +13,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "UI/HTTP/HTTP_RequestTypes.h"
 #include "UI/Portal/PortalManager.h"
+#include "Players/DS_LocalPlayerSubsystem.h"
 
 void UGameSessionsManager::JoinGameSession()
 {
@@ -26,6 +27,15 @@ void UGameSessionsManager::JoinGameSession()
 	Request->SetURL(API_URL);
 	Request->SetVerb(TEXT("POST"));
 	Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+
+	UDS_LocalPlayerSubsystem* LocalPlayerSubsystem = GetDS_LocalPlayerSubsystem();
+	if (IsValid(LocalPlayerSubsystem))
+	{
+		Request->SetHeader(TEXT("Authorization"), LocalPlayerSubsystem->GetFDS_AuthenticationResult().AccessToken);
+	}
+
+	
+
 	Request->ProcessRequest();
 }
 

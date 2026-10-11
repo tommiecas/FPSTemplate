@@ -6,6 +6,7 @@
 #include "UObject/Object.h"
 #include "HTTP_RequestManager.generated.h"
 
+class UDS_LocalPlayerSubsystem;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FAPI_StatusMessage, const FString&, Message, bool, bShouldResetWidgets);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAPIRequestSucceeded);
 
@@ -21,6 +22,8 @@ class DEDICATEDSERVERS_API UHTTP_RequestManager : public UObject
 	GENERATED_BODY()
 
 public:
+	UDS_LocalPlayerSubsystem* GetDS_LocalPlayerSubsystem() const;
+	
 	UPROPERTY(BlueprintAssignable)
 	FAPI_StatusMessage OnAPI_StatusMessageLeft;
 

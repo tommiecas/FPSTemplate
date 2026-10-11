@@ -248,5 +248,8 @@ struct FDS_InitiateAuth_Response
 	UPROPERTY()
 	FString Session{};
 
+	UPROPERTY()
+	FString email{};
+
 	void Dump() const;
 };

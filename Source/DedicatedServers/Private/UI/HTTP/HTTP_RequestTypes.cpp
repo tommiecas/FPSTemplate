@@ -136,4 +136,6 @@ void FDS_InitiateAuth_Response::Dump() const
 	}
 
 	UE_LOG(LogDedicatedServers, Log, TEXT("Session: %s"), *Session);
+	UE_LOG(LogDedicatedServers, Log, TEXT("Email: %s"), *email);
+
 }

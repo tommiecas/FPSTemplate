@@ -16,5 +16,6 @@ namespace DedicatedServersGameplayTags
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(SignUpResource);
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(ConfirmSignUpResource);
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(SignInResource);
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(SignOutResource);
 	}
 }

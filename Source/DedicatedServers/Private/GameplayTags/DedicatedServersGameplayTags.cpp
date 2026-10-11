@@ -15,5 +15,6 @@ namespace DedicatedServersGameplayTags
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(SignUpResource, "DedicatedServersGameplayTags.PortalAPI.SignUpResource", "Creates a new user in the Portal API.");
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(ConfirmSignUpResource, "DedicatedServersGameplayTags.PortalAPI.ConfirmSignUpResource", "Confirms the creation of a new user in the Portal API.");
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(SignInResource, "DedicatedServersGameplayTags.PortalAPI.SignInResource", "Signs a new user in the Portal API into their account.");
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(SignOutResource, "DedicatedServersGameplayTags.PortalAPI.SignOutResource", "Signs a new user out of their account in the Portal API.");
 	}
 }

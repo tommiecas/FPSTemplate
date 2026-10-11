@@ -37,6 +37,7 @@ void USignInOverlay::NativeConstruct()
 	PortalManager->ConfirmStatusMessageDelegate.AddDynamic(ConfirmSignUpPage, &UConfirmSignUpPage::UpdateConfirmationStatusMessage);
 
 	SuccessConfirmedPage->Button_OK->OnClicked.AddDynamic(this, &USignInOverlay::ShowSignInPage);
+	ShowSignInPage();
 }
 
 void USignInOverlay::ShowSignInPage()
