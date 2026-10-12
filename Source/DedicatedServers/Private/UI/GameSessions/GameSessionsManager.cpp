@@ -17,6 +17,12 @@
 
 void UGameSessionsManager::JoinGameSession()
 {
+	UDS_LocalPlayerSubsystem* SessionSubsystem = GetDS_LocalPlayerSubsystem();
+	if (!IsValid(SessionSubsystem) || SessionSubsystem->GetFDS_AuthenticationResult().AccessToken.IsEmpty())
+	{
+		OnAPI_StatusMessageLeft.Broadcast(TEXT("Please sign in again before joining a game."), true);
+		return;
+	}
 	OnAPI_StatusMessageLeft.Broadcast(TEXT("Searching for Game Session..."), false);
 
 	check(API_Data);
@@ -36,15 +42,25 @@ void UGameSessionsManager::JoinGameSession()
 
 	
 
-	Request->ProcessRequest();
+	if (!Request->ProcessRequest())
+	{
+		OnAPI_StatusMessageLeft.Broadcast(TEXT("Could not start the game-session request."), true);
+	}
 }
 
 void UGameSessionsManager::FindOrCreateGameSession_Response(FHttpRequestPtr Request, FHttpResponsePtr Response,
 	bool bWasSuccessful)
 {
-	if (!bWasSuccessful)
+	if (!bWasSuccessful || !Response.IsValid())
 	{
-		OnAPI_StatusMessageLeft.Broadcast(HTTP_StatusMessages::SomethingWentWrong, true); 
+		OnAPI_StatusMessageLeft.Broadcast(TEXT("Could not reach the game-session service. Please try again."), true);
+		return;
+	}
+	if (!EHttpResponseCodes::IsOk(Response->GetResponseCode()))
+	{
+		UE_LOG(LogTemp, Error, TEXT("FindOrCreateGameSession failed: HTTP %d"), Response->GetResponseCode());
+		OnAPI_StatusMessageLeft.Broadcast(FString::Printf(TEXT("Game-session search failed (HTTP %d)."), Response->GetResponseCode()), true);
+		return;
 	}
 
 	TSharedPtr<FJsonObject> JsonObject;
@@ -54,23 +70,39 @@ void UGameSessionsManager::FindOrCreateGameSession_Response(FHttpRequestPtr Requ
 		if (ContainsErrors(JsonObject))
 		{
 			OnAPI_StatusMessageLeft.Broadcast(HTTP_StatusMessages::SomethingWentWrong, true);
+			return;
 		}
 
 		FDS_GameSessionResponse GameSessionResponse;
-		FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), &GameSessionResponse);
+		if (!FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), &GameSessionResponse) || GameSessionResponse.GameSessionId.IsEmpty())
+		{
+			OnAPI_StatusMessageLeft.Broadcast(TEXT("Game-session service returned an invalid session."), true);
+			return;
+		}
 
 		const FString GameSessionID = GameSessionResponse.GameSessionId;
 		const FString GameSessionStatus = GameSessionResponse.Status;
 		TrackGameSessionStatus(GameSessionStatus, GameSessionID);
+	}
+	else
+	{
+		OnAPI_StatusMessageLeft.Broadcast(TEXT("Game-session service returned an unreadable response."), true);
 	}
 }
 
 void UGameSessionsManager::CreatePlayerSession_Response(FHttpRequestPtr Request, FHttpResponsePtr Response,
 	bool bWasSuccessful)
 {
-	if (!bWasSuccessful)
+	if (!bWasSuccessful || !Response.IsValid())
 	{
-		OnAPI_StatusMessageLeft.Broadcast(HTTP_StatusMessages::SomethingWentWrong, true); 
+		OnAPI_StatusMessageLeft.Broadcast(TEXT("Could not reach the player-session service. Please try again."), true);
+		return;
+	}
+	if (!EHttpResponseCodes::IsOk(Response->GetResponseCode()))
+	{
+		UE_LOG(LogTemp, Error, TEXT("CreatePlayerSession failed: HTTP %d"), Response->GetResponseCode());
+		OnAPI_StatusMessageLeft.Broadcast(FString::Printf(TEXT("Player-session creation failed (HTTP %d)."), Response->GetResponseCode()), true);
+		return;
 	}
 
 	TSharedPtr<FJsonObject> JsonObject;
@@ -80,10 +112,16 @@ void UGameSessionsManager::CreatePlayerSession_Response(FHttpRequestPtr Request,
 		if (ContainsErrors(JsonObject))
 		{
 			OnAPI_StatusMessageLeft.Broadcast(HTTP_StatusMessages::SomethingWentWrong, true);
+			return;
 		}
 
 		FDS_PlayerSessionResponse PlayerSessionResponse;
-		FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), &PlayerSessionResponse);
+		if (!FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), &PlayerSessionResponse) ||
+			PlayerSessionResponse.IpAddress.IsEmpty() || PlayerSessionResponse.Port <= 0)
+		{
+			OnAPI_StatusMessageLeft.Broadcast(TEXT("Player-session service returned an invalid server address."), true);
+			return;
+		}
 
 		PlayerSessionResponse.Dump();
 
@@ -99,6 +137,10 @@ void UGameSessionsManager::CreatePlayerSession_Response(FHttpRequestPtr Request,
 		const FName Address(*IpAndPort);
 		UGameplayStatics::OpenLevel(this, Address);
 	}
+	else
+	{
+		OnAPI_StatusMessageLeft.Broadcast(TEXT("Player-session service returned an unreadable response."), true);
+	}
 }
 
 FString UGameSessionsManager::GetUniquePlayerID()
@@ -112,7 +154,8 @@ FString UGameSessionsManager::GetUniquePlayerID()
 			return TEXT("Player_") + FString::FromInt(LocalPlayerState->GetUniqueID());
 		}
 	}
-	return FString();
+	// The portal can run without an online-subsystem unique ID.
+	return FString(TEXT("Player_")) + FGuid::NewGuid().ToString(EGuidFormats::Digits);
 }
 
 void UGameSessionsManager::TrackGameSessionStatus(const FString& Status, const FString& SessionID)
@@ -135,7 +178,8 @@ void UGameSessionsManager::TrackGameSessionStatus(const FString& Status, const F
 	}
 	else
 	{
-		OnAPI_StatusMessageLeft.Broadcast(HTTP_StatusMessages::SomethingWentWrong, true);
+		UE_LOG(LogTemp, Error, TEXT("Cannot join game session with status: %s"), *Status);
+		OnAPI_StatusMessageLeft.Broadcast(FString::Printf(TEXT("Game session is not ready (%s). Please try again."), *Status), true);
 	}
 }
 
@@ -150,6 +194,11 @@ void UGameSessionsManager::TryCreatePlayerSession(const FString& PlayerID, const
 	Request->SetVerb(TEXT("POST"));
 	Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
 
+	if (UDS_LocalPlayerSubsystem* LocalPlayerSubsystem = GetDS_LocalPlayerSubsystem())
+	{
+		Request->SetHeader(TEXT("Authorization"), LocalPlayerSubsystem->GetFDS_AuthenticationResult().AccessToken);
+	}
+
 	TMap<FString, FString> ContentParams = {
 		{ TEXT("playerId"), PlayerID },
 		{ TEXT("gameSessionId"), GameSessionID }
@@ -157,6 +206,9 @@ void UGameSessionsManager::TryCreatePlayerSession(const FString& PlayerID, const
 	const FString Content = SerializeJsonContent(ContentParams);
 	
 	Request->SetContentAsString(Content);
-	Request->ProcessRequest();
+	if (!Request->ProcessRequest())
+	{
+		OnAPI_StatusMessageLeft.Broadcast(TEXT("Could not start the player-session request."), true);
+	}
 }
 

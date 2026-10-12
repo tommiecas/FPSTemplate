@@ -39,15 +39,34 @@ void UPortalManager::SignIn(const FString& UserName, const FString& Password)
 
 void UPortalManager::SignIn_Response(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
 {
-	if (!bWasSuccessful)
+	if (!bWasSuccessful || !Response.IsValid())
 	{
 		SignInStatusMessageDelegate.Broadcast(HTTP_StatusMessages::SomethingWentWrong, true);
+		return;
+	}
+	if (!EHttpResponseCodes::IsOk(Response->GetResponseCode()))
+	{
+		UE_LOG(LogTemp, Error, TEXT("Sign In failed: HTTP %d"), Response->GetResponseCode());
+		SignInStatusMessageDelegate.Broadcast(FString::Printf(TEXT("Sign in failed (HTTP %d)."), Response->GetResponseCode()), true);
+		return;
 	}
 
 	TSharedPtr<FJsonObject> JsonObject;
 	TSharedRef<TJsonReader<>> JsonReader = TJsonReaderFactory<>::Create(Response->GetContentAsString());
 	if (FJsonSerializer::Deserialize(JsonReader, JsonObject))
 	{
+		// Some integrations return the Lambda response envelope directly.
+		FString Body;
+		if (JsonObject->TryGetStringField(TEXT("body"), Body))
+		{
+			TSharedPtr<FJsonObject> BodyObject;
+			if (!FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Body), BodyObject) || !BodyObject.IsValid())
+			{
+				SignInStatusMessageDelegate.Broadcast(TEXT("Sign in returned an unreadable response."), true);
+				return;
+			}
+			JsonObject = BodyObject;
+		}
 		if (ContainsErrors(JsonObject))
 		{
 			SignInStatusMessageDelegate.Broadcast(HTTP_StatusMessages::SomethingWentWrong, true);
@@ -55,8 +74,14 @@ void UPortalManager::SignIn_Response(FHttpRequestPtr Request, FHttpResponsePtr R
 		}
 
 		FDS_InitiateAuth_Response InitiateAuth_Response;
-		FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), &InitiateAuth_Response);
-		InitiateAuth_Response.Dump();
+		if (!FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), &InitiateAuth_Response) ||
+			InitiateAuth_Response.AuthenticationResult.AccessToken.IsEmpty() ||
+			InitiateAuth_Response.AuthenticationResult.IdToken.IsEmpty())
+		{
+			UE_LOG(LogTemp, Error, TEXT("Sign In response did not contain valid authentication tokens."));
+			SignInStatusMessageDelegate.Broadcast(TEXT("Sign in did not return authentication tokens. Please try again."), true);
+			return;
+		}
 		
 		UDS_LocalPlayerSubsystem* DS_LocalPlayerSubsystem = GetDS_LocalPlayerSubsystem();
 		if (IsValid(DS_LocalPlayerSubsystem))
@@ -74,6 +99,10 @@ void UPortalManager::SignIn_Response(FHttpRequestPtr Request, FHttpResponsePtr R
 				HUDManagementInterface->OnSignIn();
 			}
 		}
+	}
+	else
+	{
+		SignInStatusMessageDelegate.Broadcast(TEXT("Sign in returned an unreadable response."), true);
 	}
 }
 

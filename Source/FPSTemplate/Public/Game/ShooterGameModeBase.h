@@ -4,13 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "Game/DS_GameMode.h"
+#include "Game/DS_MatchGameMode.h"
 #include "ShooterGameModeBase.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class FPSTEMPLATE_API AShooterGameModeBase : public ADS_GameMode
+class FPSTEMPLATE_API AShooterGameModeBase : public ADS_MatchGameMode
 {
 	GENERATED_BODY()
 public:
