@@ -27,6 +27,8 @@ protected:
 	virtual void OnCountdownTimerFinished(ECountdownTimerType Type) override;
 	void CheckAndStopLobbyCountdown();
 	virtual void Logout(AController* Exiting) override;
+	virtual void PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage) override;
+	virtual FString InitNewPlayer(APlayerController* NewPlayerController, const FUniqueNetIdRepl& UniqueId, const FString& Options, const FString& Portal) override;
 	virtual void InitSeamlessTravelPlayer(AController* NewController) override;
 
 	UPROPERTY()
@@ -47,6 +49,7 @@ private:
 
 	void InitGameLift();
 	void SetServerParameters(FServerParameters& OutServerParameters);
-
-
+	void TryAcceptPlayerSession(const FString& PlayerSessionId, const FString& UserName, FString& OutErrorMessage);
+	void AddPlayerInfoToLobbyState(AController* Player) const;
+	void RemovePlayerInfoFromLobbyState(AController* Player) const;
 };

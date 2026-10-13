@@ -5,12 +5,12 @@
 #include "Kismet/GameplayStatics.h"
 #include "DedicatedServersTypes/DS_Types.h"
 #include "Players/DS_PlayerController.h"
+#include "GameLiftServerSDK.h"
 
 void ADS_BaseGameMode::StartCountdownTimer(FCountdownTimerHandle& CountdownTimerHandle)
 {
 	CountdownTimerHandle.TimerFinishedDelegate.BindWeakLambda(this, [&]()
 	{
-		StopCountdownTimer(CountdownTimerHandle);
 		OnCountdownTimerFinished(CountdownTimerHandle.Type);
 	});
 
@@ -79,4 +79,18 @@ void ADS_BaseGameMode::TrySeamlessTravel(TSoftObjectPtr<UWorld> DestinationMap)
 	{
 		GetWorld()->ServerTravel(MapName);
 	}
+}
+
+void ADS_BaseGameMode::RemovePlayerSession(AController* Exiting)
+{
+	ADS_PlayerController* DS_PlayerController = Cast<ADS_PlayerController>(Exiting);
+	if (!IsValid(DS_PlayerController)) return;
+
+#if WITH_GAMELIFT
+	const FString& PlayerSessionId = DS_PlayerController->PlayerSessionId;
+	if (!PlayerSessionId.IsEmpty())
+	{
+		Aws::GameLift::Server::RemovePlayerSession(TCHAR_TO_ANSI(*PlayerSessionId));
+	}
+#endif
 }

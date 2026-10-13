@@ -19,6 +19,8 @@ class DEDICATEDSERVERS_API ADS_MatchGameMode : public ADS_BaseGameMode
 public:
 	ADS_MatchGameMode();
 	virtual void PostLogin(APlayerController* NewPlayer) override;
+	virtual void Logout(AController* Exiting) override;
+	virtual void InitSeamlessTravelPlayer(AController* NewController) override;
 	
 	UPROPERTY(BlueprintReadOnly)
 	EMatchStatus MatchStatus;

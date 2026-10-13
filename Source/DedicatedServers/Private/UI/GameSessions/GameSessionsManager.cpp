@@ -5,6 +5,7 @@
 
 #include "HttpModule.h"
 #include "JsonObjectConverter.h"
+#include "aws/gamelift/server/model/PlayerSession.h"
 #include "Data/API/API_Data.h"
 #include "GameFramework/PlayerState.h"
 #include "GameplayTags/DedicatedServersGameplayTags.h"
@@ -132,10 +133,11 @@ void UGameSessionsManager::CreatePlayerSession_Response(FHttpRequestPtr Request,
 			LocalPlayerController->SetInputMode(InputModeData);
 			LocalPlayerController->SetShowMouseCursor(false);
 		}
-		
+
+		const FString Options = "?PlayerSessionId=" + PlayerSessionResponse.PlayerSessionId + "?Username=" + PlayerSessionResponse.PlayerId;
 		const FString IpAndPort = PlayerSessionResponse.IpAddress + TEXT(":") + FString::FromInt(PlayerSessionResponse.Port);
 		const FName Address(*IpAndPort);
-		UGameplayStatics::OpenLevel(this, Address);
+		UGameplayStatics::OpenLevel(this, Address, true, Options);
 	}
 	else
 	{
@@ -163,7 +165,10 @@ void UGameSessionsManager::TrackGameSessionStatus(const FString& Status, const F
 	if (Status.Equals(TEXT("ACTIVE")))
 	{
 		OnAPI_StatusMessageLeft.Broadcast(TEXT("Found active Game Session! Creating new Player Session..."), false);
-		TryCreatePlayerSession(GetUniquePlayerID(), SessionID);	
+		if (UDS_LocalPlayerSubsystem* DS_LocalPlayerSubsystem = GetDS_LocalPlayerSubsystem(); IsValid(DS_LocalPlayerSubsystem))
+		{
+			TryCreatePlayerSession(DS_LocalPlayerSubsystem->UserName, SessionID);
+		}
 	}
 	else if (Status.Equals(TEXT("ACTIVATING")))
 	{

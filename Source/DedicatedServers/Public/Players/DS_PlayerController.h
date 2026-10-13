@@ -36,12 +36,11 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnTimerStateChangedDelegate OnTimerStopped;
 
-	UPROPERTY(BlueprintAssignable)
-	FOnTimerStateChangedDelegate OnTimerPaused;
+	UPROPERTY(BlueprintReadOnly)
+	FString Username;
 
-	UPROPERTY(BlueprintAssignable)
-	FOnTimerStateChangedDelegate OnTimerResumed;
-
+	UPROPERTY(BlueprintReadOnly)
+	FString PlayerSessionId;
 protected:
 	UFUNCTION(Server, Reliable)
 	void Server_Ping(float TimeOfRequest);

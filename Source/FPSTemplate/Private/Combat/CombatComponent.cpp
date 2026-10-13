@@ -10,6 +10,7 @@
 #include "TimerManager.h"
 #include "FPSTemplate/FPSTemplate.h"
 #include "Kismet/GameplayStatics.h"
+#include "DrawDebugHelpers.h"
 
 UCombatComponent::UCombatComponent()
 {
@@ -332,6 +333,13 @@ void UCombatComponent::Local_FireWeapon()
 
 		FHitResult Hit;
 		FVector TraceStart = HitScanTrace(5.f, Hit);
+		UE_LOG(LogTemp, Warning,
+			TEXT("SHOT: Actor=%s Component=%s Distance=%.1f StartInside=%d Impact=%s"),
+			*GetNameSafe(Hit.GetActor()),
+			*GetNameSafe(Hit.GetComponent()),
+			Hit.Distance,
+			Hit.bStartPenetrating,
+			*Hit.ImpactPoint.ToString());
 		// Tell the weapon the impact point, normal, and physical material
 		EPhysicalSurface SurfaceType = Hit.PhysMaterial.IsValid(false) ? Hit.PhysMaterial->SurfaceType.GetValue() : EPhysicalSurface::SurfaceType1;
 		CurrentWeapon->Local_Fire(Hit.ImpactPoint, Hit.ImpactNormal, SurfaceType, true);
@@ -626,12 +634,24 @@ FVector UCombatComponent::HitScanTrace(float SweepRadius, FHitResult& OutHit)
 		FVector2D ReticleLocation(ViewportSize.X / 2.f, ViewportSize.Y / 2.f);
 		FVector ReticleWorldLocation;
 		FVector ReticleWorlDirection;
-		UGameplayStatics::DeprojectScreenToWorld(PC, ReticleLocation, ReticleWorldLocation, ReticleWorlDirection);
-
+		FRotator ViewRotation;
+		PC->GetPlayerViewPoint(ReticleWorldLocation, ViewRotation);
+		ReticleWorlDirection = ViewRotation.Vector();
 		Start = ReticleWorldLocation;
 		FVector End = Start + ReticleWorlDirection * TraceLength;
 
+		UE_LOG(LogTemp, Warning,
+			TEXT("AIM: Shooter=%s ViewTarget=%s Start=%s PawnLocation=%s ViewRotation=%s ControlRotation=%s"),
+			*GetNameSafe(GetOwner()),
+			*GetNameSafe(PC->GetViewTarget()),
+			*Start.ToString(),
+			*GetOwner()->GetActorLocation().ToString(),
+			*ViewRotation.ToString(),
+			*PC->GetControlRotation().ToString());
+
 		const bool bHit = GetWorld()->SweepSingleByChannel(OutHit, Start, End, FQuat::Identity, ECC_Weapon, FCollisionShape::MakeSphere(SweepRadius), QueryParams, ResponseParams);
+		DrawDebugLine(GetWorld(), Start, OutHit.bBlockingHit ? OutHit.ImpactPoint : End,
+			FColor::Red, false, 120.f, 0, 2.f);
 		if (!bHit)
 		{
 			OutHit.ImpactPoint = End;

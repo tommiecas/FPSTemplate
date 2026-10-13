@@ -14,13 +14,13 @@ void UDS_GameInstanceSubsystem::InitializeGameLift(const FServerParameters& Serv
 	if (bIsGameLiftInitialized) return;
 
 #if WITH_GAMELIFT
-	UE_LOG(FLogCategoryLogDedicatedServers, Log, TEXT("Initializing the GameLift Server"));
+	UE_LOG(LogDedicatedServers, Log, TEXT("Initializing the GameLift Server"));
 
 	FGameLiftServerSDKModule* GameLiftSDKModule = &FModuleManager::LoadModuleChecked<FGameLiftServerSDKModule>(FName("GameLiftServerSDK"));
-	GameLiftModule->InitSDK(ServerParams);
+	GameLiftSDKModule->InitSDK(ServerParams);
 
 	auto OnGameSession = [=]
-	(Aws::GameLift::Server::Mode1::GameSession gameSession)
+	(Aws::GameLift::Server::Model::GameSession gameSession)
 	{
 		FString GameSessionId = FString(gameSession.GetGameSessionId());
 		UE_LOG(LogDedicatedServers, Log, TEXT("GameSession Initializing: %s"), *GameSessionId);
@@ -50,14 +50,14 @@ ProcessParameters.OnHealthCheck.BindLambda(OnHealthCheck);
 	int32 Port = FURL::UrlConfig.DefaultPort;
 	ParseCommandLinePort(Port);
 
-	ProcessParameters.port = ERROR_NDIS_INVALID_PORT;
+	ProcessParameters.port = Port;
 
 	TArray<FString> LogFiles;
 	LogFiles.Add(TEXT("FPSTemplate/Saved/Logs/FPSTemplate.log"));
 	ProcessParameters.logParameters = LogFiles;
 
 	UE_LOG(LogDedicatedServers, Log, TEXT("Calling Process Ready."));
-	GameLiftSdkModule->ProcessReady(ProcessParameters);
+	GameLiftSDKModule->ProcessReady(ProcessParameters);
 
 #endif
 	bIsGameLiftInitialized = true;
