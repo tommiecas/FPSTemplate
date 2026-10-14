@@ -2,6 +2,7 @@
 
 
 #include "Players/DS_LocalPlayerSubsystem.h"
+#include "DedicatedServers/DedicatedServers.h"
 
 #include "UI/Portal/Portal_Interfaces/PortalManagement.h"
 
@@ -10,6 +11,7 @@ void UDS_LocalPlayerSubsystem::InitializeTokens(const ::FDS_AuthenticationResult
 	TScriptInterface<IPortalManagement> PortalManagement)
 {
 	AuthenticationResult = InAuthResult;
+	UE_LOG(LogDedicatedServers, Log, TEXT("Access Token: %s"), *AuthenticationResult.AccessToken);
 	PortalManagementInterface = PortalManagement;
 	SetRefreshTokenTimer();
 }

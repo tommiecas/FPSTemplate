@@ -4,7 +4,7 @@
        IntelliSense list to Windows' size-limited INCLUDE environment variable. -->
   <Target Name="FPSTemplatePrepareMakefileIncludeEnvironment"
           BeforeTargets="SetBuildDefaultEnvironmentVariables"
-          Condition="'$(ConfigurationType)' == 'Makefile' and '$(MSBuildProjectName)' == 'FPSTemplate'">
+          Condition="'$(ConfigurationType)' == 'Makefile' and ('$(MSBuildProjectName)' == 'FPSTemplate' or '$(MSBuildProjectName)' == 'UE5')">
     <PropertyGroup>
       <FPSTemplateSavedIncludePath>$(IncludePath)</FPSTemplateSavedIncludePath>
       <IncludePath>$(DefaultSystemIncludePaths)</IncludePath>
@@ -12,7 +12,7 @@
   </Target>
   <Target Name="FPSTemplateRestoreMakefileIncludePath"
           AfterTargets="SetBuildDefaultEnvironmentVariables"
-          Condition="'$(ConfigurationType)' == 'Makefile' and '$(MSBuildProjectName)' == 'FPSTemplate'">
+          Condition="'$(ConfigurationType)' == 'Makefile' and ('$(MSBuildProjectName)' == 'FPSTemplate' or '$(MSBuildProjectName)' == 'UE5')">
     <PropertyGroup>
       <IncludePath>$(FPSTemplateSavedIncludePath)</IncludePath>
     </PropertyGroup>

@@ -18,4 +18,11 @@ namespace DedicatedServersGameplayTags
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(SignInResource);
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(SignOutResource);
 	}
+
+	namespace GameStatsAPI
+	{
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(RecordMatchStatsResource);
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(RetrieveMatchStatsResource);
+
+	}
 }

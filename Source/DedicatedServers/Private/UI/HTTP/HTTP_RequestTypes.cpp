@@ -139,3 +139,24 @@ void FDS_InitiateAuth_Response::Dump() const
 	UE_LOG(LogDedicatedServers, Log, TEXT("Email: %s"), *email);
 
 }
+
+void FDSRetrieveMatchStatsResponse::Dump() const
+{
+	UE_LOG(LogDedicatedServers, Log, TEXT("FDS Retrieve Match Stats Response: "));
+	UE_LOG(LogDedicatedServers, Log, TEXT("Longest Streak: %d"), longestStreak);
+	UE_LOG(LogDedicatedServers, Log, TEXT("Dethrone Eliminations: %d"), dethroneEliminations);
+	UE_LOG(LogDedicatedServers, Log, TEXT("Got First Blood: %d"), gotFirstBlood);
+	UE_LOG(LogDedicatedServers, Log, TEXT("Defeats: %d"), defeats);
+	UE_LOG(LogDedicatedServers, Log, TEXT("Scored Eliminations: %d"), scoredEliminations);
+	UE_LOG(LogDedicatedServers, Log, TEXT("Email: %s"), *email);
+	UE_LOG(LogDedicatedServers, Log, TEXT("Misses: %d"), misses);
+	UE_LOG(LogDedicatedServers, Log, TEXT("Revenge Eliminations: %d"), revengeEliminations);
+	UE_LOG(LogDedicatedServers, Log, TEXT("Match Losses: %d"), matchLosses);
+	UE_LOG(LogDedicatedServers, Log, TEXT("Showstopper Eliminations: %d"), showstopperEliminations);
+	UE_LOG(LogDedicatedServers, Log, TEXT("Database ID: %s"), *databaseid);
+	UE_LOG(LogDedicatedServers, Log, TEXT("Headshot Eliminations: %d"), headShotEliminations);
+	UE_LOG(LogDedicatedServers, Log, TEXT("User Name: %s"), *username);
+	UE_LOG(LogDedicatedServers, Log, TEXT("Hits: %d"), hits);
+	UE_LOG(LogDedicatedServers, Log, TEXT("Match Wins: %d"), matchWins);
+	
+}

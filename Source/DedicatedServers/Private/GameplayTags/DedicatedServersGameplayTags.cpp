@@ -17,4 +17,11 @@ namespace DedicatedServersGameplayTags
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(SignInResource, "DedicatedServersGameplayTags.PortalAPI.SignInResource", "Signs a new user in the Portal API into their account.");
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(SignOutResource, "DedicatedServersGameplayTags.PortalAPI.SignOutResource", "Signs a new user out of their account in the Portal API.");
 	}
+	
+	namespace GameStatsAPI
+	{
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(RecordMatchStatsResource, "DedicatedServersGameplayTags.GameStatsAPI.RecordMatchStatsResource", "Records the stats of a match in GameStatsAPI.");
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(RetrieveMatchStatsResource, "DedicatedServersGameplayTags.GameStatsAPI.RetrieveMatchStatsResource", "Retrieves the stats of a match in GameStatsAPI.");
+
+	}
 }

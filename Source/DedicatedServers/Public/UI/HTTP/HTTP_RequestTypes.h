@@ -253,3 +253,110 @@ struct FDS_InitiateAuth_Response
 
 	void Dump() const;
 };
+
+USTRUCT()
+struct FDS_MatchStats
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	int32 scoredEliminations{};
+
+	UPROPERTY()
+	int32 defeats{};
+
+	UPROPERTY()
+	int32 hits{};
+
+	UPROPERTY()
+	int32 misses{};
+
+	UPROPERTY()
+	int32 headShotEliminations{};
+
+	UPROPERTY()
+	int32 gotFirstBlood{};
+
+	UPROPERTY()
+	int32 matchWins{};
+
+	UPROPERTY()
+	int32 matchLosses{};
+
+	UPROPERTY()
+	int32 longestStreak{};
+
+	UPROPERTY()
+	int32 revengeEliminations{};
+
+	UPROPERTY()
+	int32 dethroneEliminations{};
+
+	UPROPERTY()
+	int32 showStopperEliminations{};
+};
+
+USTRUCT()
+struct FDS_RecordMatchStatsInput
+{
+	GENERATED_BODY()
+	
+	UPROPERTY()
+	FDS_MatchStats matchStats{};
+
+	UPROPERTY()
+	FString username{};
+};
+
+USTRUCT()
+struct FDSRetrieveMatchStatsResponse
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	int32 longestStreak{};
+
+	UPROPERTY()
+	int32 dethroneEliminations{};
+
+	UPROPERTY()
+	int32 gotFirstBlood{};
+
+	UPROPERTY()
+	int32 defeats{};
+
+	UPROPERTY()
+	int32 scoredEliminations{};
+
+	UPROPERTY()
+	FString email{};
+
+	UPROPERTY()
+	int32 misses{};
+
+	UPROPERTY()
+	int32 revengeEliminations{};
+
+	UPROPERTY()
+	int32 matchLosses{};
+
+	UPROPERTY()
+	int32 showstopperEliminations{};
+
+	UPROPERTY()
+	FString databaseid{};
+
+	UPROPERTY()
+	int32 headShotEliminations{};
+
+	UPROPERTY()
+	FString username{};
+
+	UPROPERTY()
+	int32 hits{};
+
+	UPROPERTY()
+	int32 matchWins{};
+
+	void Dump() const;
+};
